@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include "M0564.h"
 
-#define ENABLE_I2C_POLLING_DISCRETE
+//#define ENABLE_I2C_POLLING_DISCRETE
 //#define ENABLE_I2C_POLLING_API
 //#define ENABLE_I2C_IRQ
 

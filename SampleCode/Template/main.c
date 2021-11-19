@@ -170,10 +170,10 @@ void I2C0_Init(void)	//PE4 : SCL , PE5 : SDA
     /* Get I2C0 Bus Clock */
     printf("I2C clock %d Hz\n", I2C_GetBusClockFreq(MASTER_I2C));
 
-	#if defined (ENABLE_I2C_IRQ)
-    I2C_EnableInt(MASTER_I2C);
-    NVIC_EnableIRQ(MASTER_I2C_IRQn);
-	#endif
+//	#if defined (ENABLE_I2C_IRQ)
+//    I2C_EnableInt(MASTER_I2C);
+//    NVIC_EnableIRQ(MASTER_I2C_IRQn);
+//	#endif
 	
 }
 
