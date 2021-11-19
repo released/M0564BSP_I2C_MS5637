@@ -3,37 +3,41 @@
 
 update @ 2021/11/19
 
-1. with M0564LG4AE MCU platform , with UART0(TX:PD1,RX:PD0),I2C0(PE4:SCL,PE5:SDA) , to initial Pressure Sensor:MS5637
+## with M0564LG4AE MCU platform , to initial Pressure Sensor:MS5637 with , 
 
-2. check video under the folder ,
+*UART0 (TX:PD1, RX:PD0),
 
-floor1_to_floor13.mp4 , for log output ( from floor 1 TO floor 13)
+*I2C0 (PE4:SCL, PE5:SDA),
 
-floor13_to_floor3.mp4 , for log output ( from floor 13 TO floor 3)
+##check video under the folder ,
 
-floor3_to_floor1.mp4 , for log output ( from floor 3 TO floor 1)
+*floor1_to_floor13.mp4 , for log output ( from floor 1 TO floor 13)
+
+*floor13_to_floor3.mp4 , for log output ( from floor 13 TO floor 3)
+
+*floor3_to_floor1.mp4 , for log output ( from floor 3 TO floor 1)
 
 
-3. below is floor capture , 
+##below is floor capture , 
 
-floor 1
+**floor 1**
 ![image](https://github.com/released/M0564BSP_I2C_MS5637/blob/main/floor1.jpg)
 
-floor 2
+**floor 2**
 ![image](https://github.com/released/M0564BSP_I2C_MS5637/blob/main/floor2.jpg)
 
-floor 3
+**floor 3**
 ![image](https://github.com/released/M0564BSP_I2C_MS5637/blob/main/floor3.jpg)
 
-floor 4
+**floor 4**
 ![image](https://github.com/released/M0564BSP_I2C_MS5637/blob/main/floor4.jpg)
 
-floor 5
+**floor 5**
 ![image](https://github.com/released/M0564BSP_I2C_MS5637/blob/main/floor5.jpg)
 
-floor 6
+**floor 6**
 ![image](https://github.com/released/M0564BSP_I2C_MS5637/blob/main/floor6.jpg)
 
-floor 7
+**floor 7**
 ![image](https://github.com/released/M0564BSP_I2C_MS5637/blob/main/floor7.jpg)
 
