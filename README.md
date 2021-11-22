@@ -9,7 +9,10 @@ update @ 2021/11/22
 
 **under I2C_MS5637.c , add appMS5637_ReadCmd function , behavior same as I2C_ReadMultiBytes**
 
-`appMS5637_ReadCmd`
+`void appMS5637_ReadCmd(uint8_t DeviceAddr, uint8_t RegisterAddr,
+                              uint16_t NumByteToRead,
+                              uint8_t* pBuffer)`
+
 
 update @ 2021/11/19
 
