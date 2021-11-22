@@ -451,6 +451,11 @@
               <FileType>1</FileType>
               <FilePath>..\I2C_MS5637.c</FilePath>
             </File>
+            <File>
+              <FileName>i2c_analog.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\i2c_analog.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

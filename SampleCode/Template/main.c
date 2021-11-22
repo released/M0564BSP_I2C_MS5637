@@ -7,6 +7,7 @@
 
 #include "I2C_MS5637.h"
 #include "i2c_master.h"
+#include "i2c_analog.h"
 
 /*_____ D E C L A R A T I O N S ____________________________________________*/
 
@@ -160,6 +161,10 @@ void delay_ms(uint16_t ms)
 */
 void I2C0_Init(void)	//PE4 : SCL , PE5 : SDA
 {
+	#if defined (ENABLE_SW_I2C)
+	I2C_ANALOG_SW_open(100000);
+	#else
+
     SYS_ResetModule(I2C0_RST);
 
     /* Open I2C module and set bus clock */
@@ -174,7 +179,8 @@ void I2C0_Init(void)	//PE4 : SCL , PE5 : SDA
 //    I2C_EnableInt(MASTER_I2C);
 //    NVIC_EnableIRQ(MASTER_I2C_IRQn);
 //	#endif
-	
+
+	#endif
 }
 
 void GPIO_Init (void)
@@ -317,14 +323,18 @@ void SYS_Init(void)
     CLK_EnableModuleClock(TMR1_MODULE);
   	CLK_SetModuleClock(TMR1_MODULE, CLK_CLKSEL1_TMR1SEL_HIRC, 0);
 
+	#if !defined (ENABLE_SW_I2C)
     CLK_EnableModuleClock(I2C0_MODULE);
+	#endif
 
     /* Set PD multi-function pins for UART0 RXD and TXD */
     SYS->GPD_MFPL &= ~(SYS_GPD_MFPL_PD0MFP_Msk | SYS_GPD_MFPL_PD1MFP_Msk);
     SYS->GPD_MFPL |= (SYS_GPD_MFPL_PD0MFP_UART0_RXD | SYS_GPD_MFPL_PD1MFP_UART0_TXD);
 
+	#if !defined (ENABLE_SW_I2C)
     SYS->GPE_MFPL &= ~(SYS_GPE_MFPL_PE5MFP_Msk | SYS_GPE_MFPL_PE4MFP_Msk);
     SYS->GPE_MFPL |= (SYS_GPE_MFPL_PE5MFP_I2C0_SDA | SYS_GPE_MFPL_PE4MFP_I2C0_SCL);
+	#endif
 
    /* Update System Core Clock */
     SystemCoreClockUpdate();

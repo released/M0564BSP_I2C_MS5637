@@ -6,6 +6,8 @@
 #include <math.h>
 
 #include "i2c_master.h"
+#include "i2c_analog.h"
+#include	"project_config.h"
 
 unsigned int C[8] = {0};    // calibration coefficients   
 
@@ -129,7 +131,27 @@ void appMS5637_ReadCmd(uint8_t DeviceAddr, uint8_t RegisterAddr,
                               uint16_t NumByteToRead,
                               uint8_t* pBuffer)
 {
+	#if defined (ENABLE_SW_I2C)
+	uint16_t i = 0;	
+	I2C_ANALOG_Start();                          
+	I2C_ANALOG_SendByte(DeviceAddr | I2C_RD);        
 
+	for (i = 0; i < NumByteToRead; i++) 
+	{
+		pBuffer[i] = I2C_ANALOG_RecvByte();		
+		if (i == (NumByteToRead - 1)) 
+		{
+			//Last byte
+			I2C_ANALOG_SendNACK();			
+		} 
+		else 
+		{
+			I2C_ANALOG_SendACK(); 			
+		}
+	}
+	I2C_ANALOG_Stop(); 
+
+	#else
 	uint8_t i, tmp;
 	I2C_T *i2c = MASTER_I2C;
 
@@ -173,12 +195,22 @@ void appMS5637_ReadCmd(uint8_t DeviceAddr, uint8_t RegisterAddr,
 
 	I2C_SET_CONTROL_REG(i2c, I2C_CTL_SI);
 
+
+	#endif
+	
 }
 
 							   
 void appMS5637_WriteCmd(uint8_t DeviceAddr, uint8_t RegisterAddr)
 {
+	#if defined (ENABLE_SW_I2C)
+	I2C_ANALOG_Start();                  
+	I2C_ANALOG_SendByte(DeviceAddr | I2C_WR); 
+	
+	I2C_ANALOG_SendByte(RegisterAddr); 	
+	I2C_ANALOG_Stop(); 
 
+	#else
 //	uint8_t i;
 //	uint32_t tmp;
 	
@@ -195,7 +227,7 @@ void appMS5637_WriteCmd(uint8_t DeviceAddr, uint8_t RegisterAddr)
 	I2C_WAIT_READY(i2c);
 
 	I2C_STOP(i2c);											//Stop
-
+	#endif
 }
 
 unsigned char crc4(unsigned int n_prom[]) 
@@ -240,7 +272,11 @@ unsigned int cmd_prom(char coef_num)
 	
 	appMS5637_WriteCmd(MS5637_ADDRESS_8BIT | I2C_WR , CMD_PROM_RD+coef_num*2);   			// send PROM READ command 
 
-	ReadLen = I2C_ReadMultiBytes(i2c,MS5637_ADDRESS_7BIT , ReadData , 2);
+	#if 0
+	ReadLen = I2C_ReadMultiBytes(MASTER_I2C,MS5637_ADDRESS_7BIT , ReadData , 2);
+	#else
+	appMS5637_ReadCmd(MS5637_ADDRESS_8BIT ,NULL ,2 ,ReadData);
+	#endif
 
 	printf("ReadLen = 0x%2X\r\n" , ReadLen);
 
@@ -293,7 +329,7 @@ unsigned long cmd_adc(char cmd)
 	#if 0
 	ReadLen = I2C_ReadMultiBytes(MASTER_I2C,MS5637_ADDRESS_7BIT , ReadData , 3);
 	#else
-	appMS5637_ReadCmd(MS5637_ADDRESS_8BIT ,CMD_ADC_READ ,3 ,ReadData);
+	appMS5637_ReadCmd(MS5637_ADDRESS_8BIT ,NULL ,3 ,ReadData);
 	#endif
 
 //	printf("ReadLen = 0x%2X\r\n" , ReadLen);

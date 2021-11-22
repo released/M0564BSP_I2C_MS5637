@@ -1,6 +1,16 @@
 # M0564BSP_I2C_MS5637
  M0564BSP_I2C_MS5637
 
+update @ 2021/11/22
+
+**add software I2C GPIO control under project_config.h , enable below define to use software I2C**
+
+`#define ENABLE_SW_I2C`
+
+**under I2C_MS5637.c , add appMS5637_ReadCmd function , behavior same as I2C_ReadMultiBytes**
+
+`appMS5637_ReadCmd`
+
 update @ 2021/11/19
 
 **with M0564LG4AE MCU platform , to initial Pressure Sensor:MS5637 with **
