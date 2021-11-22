@@ -190,7 +190,7 @@ void GPIO_Init (void)
 
 void TMR1_IRQHandler(void)
 {
-	static uint32_t LOG = 0;
+//	static uint32_t LOG = 0;
 	
     if(TIMER_GetIntFlag(TIMER1) == 1)
     {

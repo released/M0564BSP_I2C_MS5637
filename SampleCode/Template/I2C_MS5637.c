@@ -124,6 +124,57 @@ void appMS5637_Write(uint8_t DeviceAddr, uint8_t RegisterAddr,
 	#endif
 }
 
+
+void appMS5637_ReadCmd(uint8_t DeviceAddr, uint8_t RegisterAddr,
+                              uint16_t NumByteToRead,
+                              uint8_t* pBuffer)
+{
+
+	uint8_t i, tmp;
+	I2C_T *i2c = MASTER_I2C;
+
+	#if 0
+	I2C_START(i2c);                         				//Start
+	I2C_WAIT_READY(i2c);
+
+	I2C_SET_DATA(i2c, DeviceAddr | I2C_WR );           	//send slave address+W
+	I2C_SET_CONTROL_REG(i2c, I2C_CTL_SI);
+	I2C_WAIT_READY(i2c);
+
+	I2C_SET_DATA(i2c, RegisterAddr);             			//send index
+	I2C_SET_CONTROL_REG(i2c, I2C_CTL_SI);
+	I2C_WAIT_READY(i2c);
+
+	I2C_STOP(i2c);										//Stop
+	#endif
+	/****************************************************/
+	
+	I2C_START(i2c);                         				//Start
+	I2C_WAIT_READY(i2c);
+
+	I2C_SET_DATA(i2c, DeviceAddr | I2C_RD );    			//send slave address+R
+	I2C_SET_CONTROL_REG(i2c, I2C_CTL_SI);
+	I2C_WAIT_READY(i2c);
+
+	for (i=0; i< NumByteToRead; i++)
+	{
+		if (i == (NumByteToRead -1))		//last byte : NACK
+		{
+			I2C_SET_CONTROL_REG(i2c, I2C_CTL_STO);
+		}
+		else			// ACK
+		{
+			I2C_SET_CONTROL_REG(i2c, I2C_CTL_SI_AA);
+		}
+		I2C_WAIT_READY(i2c);
+		tmp = I2C_GET_DATA(i2c);           				//read data
+		pBuffer[i]=tmp;
+	}
+
+	I2C_SET_CONTROL_REG(i2c, I2C_CTL_SI);
+
+}
+
 							   
 void appMS5637_WriteCmd(uint8_t DeviceAddr, uint8_t RegisterAddr)
 {
@@ -205,11 +256,17 @@ unsigned long cmd_adc(char cmd)
 //	unsigned int ret; 
 	unsigned long temp=0;               
 //	uint8_t i;
-	I2C_T *i2c = MASTER_I2C;
+//	I2C_T *i2c = MASTER_I2C;
 	uint8_t ReadData[3] = {0};
 	uint8_t ReadLen = 0;
-	
-	appMS5637_WriteCmd(MS5637_ADDRESS_8BIT | I2C_WR ,CMD_ADC_CONV+cmd);   // send conversion command 
+
+	/*
+		ENG_DS_MS5637-02BA03_B4.pdf
+		Figure 8: I 2 C command to initiate a pressure conversion
+
+		START , DEVICE ADDRESS|W , ACK , CMD (0x40 | xx) , ACK , STOP		
+	*/
+	appMS5637_WriteCmd(MS5637_ADDRESS_8BIT ,CMD_ADC_CONV+cmd);   			// send conversion command 
 	switch (cmd & 0x0f)         													// wait necessary conversion time 
 	{ 
 		case CMD_ADC_256 : MS5637_Delay_us(900); 	break; 
@@ -218,9 +275,26 @@ unsigned long cmd_adc(char cmd)
 		case CMD_ADC_2048: MS5637_Delay_ms(6);   	break; 
 		case CMD_ADC_4096: MS5637_Delay_ms(10);  	break; 
 	} 
-	appMS5637_WriteCmd(MS5637_ADDRESS_8BIT | I2C_WR ,CMD_ADC_READ); 
 
-	ReadLen = I2C_ReadMultiBytes(i2c,MS5637_ADDRESS_7BIT , ReadData , 3);
+	/*
+		ENG_DS_MS5637-02BA03_B4.pdf
+		Figure 9: I 2 C ADC read sequence
+		
+		START , DEVICE ADDRESS|W , ACK , CMD (0x00) , ACK , STOP
+	*/
+	appMS5637_WriteCmd(MS5637_ADDRESS_8BIT ,CMD_ADC_READ); 
+
+	/*
+		ENG_DS_MS5637-02BA03_B4.pdf
+		Figure 10: I 2 C answer from MS5637 
+		
+		START , DEVICE ADDRESS|R , ACK , DATA00 , ACK , DATA01 , ACK , DATA02 , NACK , STOP
+	*/	
+	#if 0
+	ReadLen = I2C_ReadMultiBytes(MASTER_I2C,MS5637_ADDRESS_7BIT , ReadData , 3);
+	#else
+	appMS5637_ReadCmd(MS5637_ADDRESS_8BIT ,CMD_ADC_READ ,3 ,ReadData);
+	#endif
 
 //	printf("ReadLen = 0x%2X\r\n" , ReadLen);
 	
