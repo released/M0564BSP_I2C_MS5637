@@ -182,7 +182,8 @@ void appMS5637_ReadCmd(uint8_t DeviceAddr, uint8_t RegisterAddr,
 	{
 		if (i == (NumByteToRead -1))		//last byte : NACK
 		{
-			I2C_SET_CONTROL_REG(i2c, I2C_CTL_STO);
+//			I2C_SET_CONTROL_REG(i2c, I2C_CTL_STO);
+			I2C_SET_CONTROL_REG(i2c, I2C_CTL_SI);
 		}
 		else			// ACK
 		{
@@ -193,8 +194,8 @@ void appMS5637_ReadCmd(uint8_t DeviceAddr, uint8_t RegisterAddr,
 		pBuffer[i]=tmp;
 	}
 
-	I2C_SET_CONTROL_REG(i2c, I2C_CTL_SI);
-
+//	I2C_SET_CONTROL_REG(i2c, I2C_CTL_SI);
+	I2C_SET_CONTROL_REG(i2c, I2C_CTL_STO_SI);
 
 	#endif
 	
